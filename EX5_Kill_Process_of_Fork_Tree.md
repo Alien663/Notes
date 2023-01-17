@@ -1,5 +1,8 @@
 # EX5 : Kill Process of Fork Tree
 
+[![hackmd-github-sync-badge](https://hackmd.io/7t5iuKYoQ8OC2eeC_TOrjQ/badge)](https://hackmd.io/7t5iuKYoQ8OC2eeC_TOrjQ)
+
+
 ###### tags: `Note`
 
 [題目出處:Klim的網站](http://erdos.csie.ncnu.edu.tw/~klim/unix-p/usp-1072.html)
@@ -101,6 +104,12 @@ newborn:
 }
 ```
 
+## 解題思路
+這題sample code都給了，包含程式邏輯也都說明了，主要就是練習語法而已，重點內容如下 :
+
+1. 搞清楚process exit signal規則
+2. 如何取得child process的exit signal
+3. unix雙視窗使用，kill process語法
 
 ## Answer
 ```cpp=
