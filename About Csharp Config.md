@@ -112,3 +112,36 @@ web.config雖然說是完全靜態的網站，但由於跟IIS站台綁定太深�
 Key Vault的定位會是保存機敏資訊的那一邊，可以想像成環境變數的上位版本，使用Key Vault保存機敏資訊一定是更安全的作法。不過考慮到成本以及連Key Vault也會需要有連線資訊，例如Client ID, Client Secret或是使用憑證等等，基本上還是會需要保存這類型的機敏資料在環境變數當中(憑證通常就直接匯入機器裡面)，我認為在這點是和環境變數有所衝突的，所以大多數情況下我可能更偏向直接將資料存在環境變數當中。
 
 所以在我看來，除非你的資安等級夭壽高或是打算上雲，否則使用雲端Key Vault就只是花錢找麻煩，還不如直接存在環境變數來得簡單。當然，如果有本事建立地端的Key Vault就是另外一回事了，有這種程度應該也不用看我這篇文章浪費時間。
+
+## Demo
+
+寫完故事和觀點後，才想到忘記補上最新版本的程式碼給大家看(噴)一下
+
+事實上.net已經把Config這些東西整很好了，所以根本沒必要多寫程式碼也可以做到前面提到的設定檔優先順序，所以接下來的內容純純就是水字數而已。
+
+相關程式碼可以參考我自己的Prototype: [WebAPI](https://github.com/Alien663/InitWebAPI)、[Worker](https://github.com/Alien663/MyWorker)
+
+**先在launch.json中新增環境變數:DOTNET_ENVIRONMENT，.net會自己啟用User Secrets**
+
+```json
+{
+  "profiles": {
+    "MyApp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
+```
+
+然後就若無其事的直接寫你的Program.cs
+
+```csharp
+Host.CreateDefaultBuilder(args)
+    .ConfigureServices((hostContext, services) => {
+        services.AddSingleton(hostContext.Configuration); // 真的就只需要這樣而已，根本沒有要寫程式去各別讀取那些設定檔
+        services.Configure<MyOption>(hostContext.Configuration.GetSection("MyProject:MyOption")); // 多一行設定Option證明我有正常取得設定檔資料
+    })
+```
