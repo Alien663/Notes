@@ -472,7 +472,7 @@ int main(int argc,  char *argv[ ]) {
          // CW pipe 有資料
          int a, b;
          if (read(cw_in, &a, sizeof(a)) > 0 && read(cw_in, &b, sizeof(b)) > 0) {
-            printf("I am %ld, got : %d %d\n", (long)getpid(), a, b);
+            printf("I am P%d, %ld, got : %d %d\n", i, (long)getpid(), a, b);
             // 計算下一步
             if(!is_root){
                int sum = a + b;
@@ -493,9 +493,9 @@ int main(int argc,  char *argv[ ]) {
             }
             else{
                if(is_root)
-                  printf("I'm %ld, the root\n", (long)getpid());
+                  printf("I'm P%d: %ld, the root\n", i,(long)getpid());
                else{
-                  printf("I'm %ld\n", (long)getpid());
+                  printf("I'm P%d: %ld\n", i, (long)getpid());
                   write(acw_out, &token, sizeof(token)); // 繼續傳
                }
             }
