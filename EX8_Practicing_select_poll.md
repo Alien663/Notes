@@ -267,9 +267,9 @@ int nprocs;
 pipe(cw);
 pipe(acw);
 cw_in = cw[0];
+cw_out = cw[1];
+acw_in = acw[0];
 acw_out = acw[1];
-close(cw[1]);
-close(acw[0]);
 ```
 
 for迴圈裡面要做的事情就比較簡單了，先是加上建立逆時針的pipe
@@ -401,12 +401,9 @@ int main(int argc,  char *argv[ ]) {
    }
 
    cw_in = cw[0];
-   acw_out = acw[1];
-
-   if ((close(cw[1]) == -1) || (close(acw[0]) == -1)) {
-      perror("Failed to close extra descriptors");
-      return 1; 
-   }   
+   cw_out = cw[1];
+   acw_in = acw[0];
+   acw_out = acw[1]; 
 
    /* create the remaining processes */
    for (i = 1; i < nprocs;  i++) {
