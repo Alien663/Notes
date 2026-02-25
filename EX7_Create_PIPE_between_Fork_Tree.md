@@ -275,7 +275,7 @@ int get_treesize(char *s) {
     return i;
 }
 
-void main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
     char label, *labels, *t_begin, *t_end;
     int j;
     
@@ -323,14 +323,14 @@ newborn:
     }
 
     pid_t pid = getpid(), ppid = getppid();
-    fprintf(stderr, "I'm %c, the %d generate, my pid=%ld, and my ppid=%ld\n", label, generate, pid, ppid);
+    fprintf(stderr, "I'm %c, the %d generation, my pid=%d, and my ppid=%d\n", label, generate, (int)pid, (int)ppid);
 
     char ch[80], ack[80];
     while(1){
         if(generate == 0) fgets(ch, 80, stdin);
         else read(parent_pipe[0], ch, sizeof(ch));
 
-        if(ch[0] == label) strcpy(ch, "POST\0");
+        if(ch[0] == label) strcpy(ch, "POST");
 
         for(int i=0;i<children_counts;i++){
             write(children[i][1], ch, sizeof(ch));
@@ -338,14 +338,16 @@ newborn:
         }
 
         if(strcmp(ch, "POST") == 0){
-            fprintf(stderr, "I'm %c, the %d generate, my pid=%ld, and my ppid=%ld\n", label, generate, pid, ppid);
+            fprintf(stderr, "I'm %c, the %d generation, my pid=%d, and my ppid=%d\n", label, generate, (int)pid, (int)ppid);
         }
 
         if(generate > 0) write(parent_pipe[1], "ack", 3);
 
         if(ch[0] == 'q'){
-            close(parent_pipe[0]);
-            close(parent_pipe[1]);
+            if(generate > 0) {  // 只有非根進程才關閉 parent_pipe
+                close(parent_pipe[0]);
+                close(parent_pipe[1]);
+            }
             for(int i=0;i<children_counts;i++){
                 close(children[i][0]);
                 close(children[i][1]);
@@ -354,6 +356,7 @@ newborn:
             break;
         }
     }
+    return 0;
 }
 ```
 
